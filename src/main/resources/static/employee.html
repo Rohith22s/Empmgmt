@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employee Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+             background: linear-gradient(to right, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 20px 25px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: 300px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        p {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Employee Status</h2>
+
+    <input type="text" id="empName" placeholder="Enter employee name">
+    <button onclick="checkStatus()">Check Status</button>
+
+    <p id="result"></p>
+</div>
+
+<script>
+function checkStatus() {
+    const name = document.getElementById("empName").value.trim();
+    const result = document.getElementById("result");
+
+    if (!name) {
+        result.innerText = "Please enter name";
+        return;
+    }
+
+    fetch("http://localhost:8084/employees/status/" + encodeURIComponent(name))
+        .then(response => {
+            if (!response.ok) throw new Error();
+            return response.json();
+        })
+        .then(data => {
+            result.innerText =
+                "Current Work: " + (data.currentWork || "Not Assigned");
+        })
+        .catch(() => {
+            result.innerText = "Employee not found";
+        });
+}
+</script>
+
+</body>
+</html>

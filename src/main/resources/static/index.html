@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>iColleague Assistant</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #667eea, #764ba2);
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background: white;
+            width: 70%;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4b0082;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4b0082;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        table {
+            margin-top: 30px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        th {
+            background-color: #4b0082;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>iColleague Assistant</h1>
+
+    <h3>Add Employee</h3>
+    <input type="text" id="name" placeholder="Name">
+    <input type="text" id="role" placeholder="Role">
+    <input type="text" id="work" placeholder="Current Work">
+    <button onclick="addEmployee()">Add</button>
+
+    <hr>
+
+    <button onclick="loadEmployees()">Load Employees</button>
+
+    <table id="employeeTable" style="display:none;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Current Work</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+</div>
+
+<script>
+    function addEmployee() {
+    const name = document.getElementById("name").value;
+    const role = document.getElementById("role").value;
+    const currentWork = document.getElementById("work").value;
+
+    fetch("http://localhost:8084/employees", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            role: role,
+            currentWork: currentWork
+        })
+    })
+    .then(res => res.json())
+    .then(() => {
+        alert("Employee Added ✅");
+        loadEmployees();
+    })
+    .catch(err => console.error(err));
+}
+function loadEmployees() {
+    fetch("http://localhost:8084/employees")
+        .then(res => res.json())
+        .then(data => {
+            console.log(data); // 👈 VERY IMPORTANT
+            const table = document.getElementById("employeeTable");
+            const body = document.getElementById("tableBody");
+
+            body.innerHTML = "";
+
+            data.forEach(e => {
+                body.innerHTML += `
+                    <tr>
+                        <td>${e.id}</td>
+                        <td>${e.name}</td>
+                        <td>${e.role}</td>
+                        <td>${e.currentWork || "Not Assigned"}</td>
+                    </tr>
+                `;
+            });
+
+            table.style.display = "table";
+        })
+        .catch(err => console.error(err));
+}
+</script>
+
+</body>
+</html>
